@@ -87,6 +87,12 @@ func main() {
     }
     if hl > 0 { 
       fmt.Println(line[0] + " " + line[1])
+      statement, err := env.db.Prepare("INSERT INTO stg_slv_primo (header_identifier , data_latest , metadata_identifier , metadata_identifier_handle_id , metadata_identidier_cms_id , metadata_identifier_accession_id , metadata_identifier_file_id , url ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)")
+      if err != nil {
+        fmt.Println(err)
+        return
+      }
+      statement.Exec(line[0],line[1],line[2],line[3],line[4],line[5],line[6],line[7])
     }
   }
 }
