@@ -57,6 +57,8 @@ func main() {
     panic(err)
   }
 
+  
+  fmt.Println("SLV - Primo")
   fmt.Println("CSV - Header")
   f, err := os.Open("csv/slv-primo.csv")
   if err != nil {
@@ -87,12 +89,52 @@ func main() {
     }
     if hl > 0 { 
       fmt.Println(line[0] + " " + line[1])
-      statement, err := env.db.Prepare("INSERT INTO stg_slv_primo (header_identifier , data_latest , metadata_identifier , metadata_identifier_handle_id , metadata_identidier_cms_id , metadata_identifier_accession_id , metadata_identifier_file_id , url ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)")
+      statement, err := env.db.Prepare("INSERT INTO stg_slv_primo (header_identifier , date_latest , metadata_identifier , metadata_identifier_handle_id , metadata_identifier_cms_id , metadata_identifier_accession_id , metadata_identifier_file_id , url ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)")
       if err != nil {
         fmt.Println(err)
         return
       }
       statement.Exec(line[0],line[1],line[2],line[3],line[4],line[5],line[6],line[7])
+    }
+  }
+  
+  fmt.Println("Swin - Trovetest")
+  fmt.Println("CSV - Header")
+  fswin, err := os.Open("csv/swin_trovetest.csv")
+  if err != nil {
+    panic(err)
+  }
+  defer fswin.Close()
+  // Read File into *lines* variable
+  lines_swin, err := csv.NewReader(fswin).ReadAll()
+  if err != nil {
+    panic(err)
+  }
+
+  // Loop through *lines*, create data object, each piece to their respective column
+  for hl, line_swin := range lines_swin {
+    if hl == 0 {
+      fmt.Println(line_swin[0] + " " + line_swin[1])
+    }
+    if hl > 0 { 
+      break
+    }
+  }
+
+  fmt.Println("CSV - Rows")
+  // Loop through *lines*, create data object, each piece to their respective column
+  for hl, line_swin := range lines_swin {
+    if hl == 0 {
+      continue
+    }
+    if hl > 0 { 
+      fmt.Println(line_swin[0] + " " + line_swin[1])
+      statement, err := env.db.Prepare("INSERT INTO stg_swin_trovetest (header_identifier , date_latest , metadata_identifier ,  metadata_identifier_file_id , url ) VALUES ($1, $2, $3, $4, $5)")
+      if err != nil {
+        fmt.Println(err)
+        return
+      }
+      statement.Exec(line_swin[0],line_swin[1],line_swin[2],line_swin[3],line_swin[4])
     }
   }
 }
