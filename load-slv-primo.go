@@ -7,6 +7,8 @@ import (
   _ "github.com/lib/pq"
   "github.com/ilyakaznacheev/cleanenv"
   "encoding/csv"
+ // "github.com/jinzhu/gorm"
+  "time"
 )
 
 type ConfigDatabase struct {
@@ -56,11 +58,24 @@ func main() {
     fmt.Println("Successfully NOT connected!")
     panic(err)
   }
+  /*
+  databaseURL := fmt.Sprintf("host=%s port=%d user=%s "+
+  "password=%s dbname=%s sslmode=disable",
+  cfg.Host, cfg.Port, cfg.User, cfg.Password, cfg.Name)
+  dbg, err := gorm.Open("postgres", databaseURL)
+  if err != nil {
+    fmt.Printf("DBERR %s", err.Error())
+  }
+  dbg.DB().SetMaxIdleConns(10)
+  dbg.DB().SetMaxOpenConns(10)
+  dbg.LogMode(false)
+*/
 
-  
   fmt.Println("SLV - Primo")
   fmt.Println("CSV - Header")
-  f, err := os.Open("csv/slv-primo.csv")
+  //f, err := os.Open("csv/slv-jenkins-vol-25.csv")
+  //f, err := os.Open("csv/slv-primo.csv")
+  f, err := os.Open("csv/slv-text.csv")
   if err != nil {
     panic(err)
   }
@@ -70,6 +85,9 @@ func main() {
   if err != nil {
     panic(err)
   }
+
+
+
 
   // Loop through *lines*, create data object, each piece to their respective column
   for hl, line := range lines {
@@ -83,18 +101,27 @@ func main() {
 
   fmt.Println("CSV - Rows")
   // Loop through *lines*, create data object, each piece to their respective column
+  statement, err := env.db.Prepare("INSERT INTO stg_slv_primo (header_identifier , date_latest , metadata_identifier , metadata_identifier_handle_id , metadata_identifier_cms_id , metadata_identifier_accession_id , metadata_identifier_file_id , url ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)")
+ // statementg := "INSERT INTO stg_slv_primo (header_identifier , date_latest , metadata_identifier , metadata_identifier_handle_id , metadata_identifier_cms_id , metadata_identifier_accession_id , metadata_identifier_file_id , url ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)"
+  a := time.Now()
+  //txg := dbg.Begin()
   for hl, line := range lines {
     if hl == 0 {
       continue
     }
     if hl > 0 { 
       fmt.Println(line[0] + " " + line[1])
-      statement, err := env.db.Prepare("INSERT INTO stg_slv_primo (header_identifier , date_latest , metadata_identifier , metadata_identifier_handle_id , metadata_identifier_cms_id , metadata_identifier_accession_id , metadata_identifier_file_id , url ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)")
       if err != nil {
         fmt.Println(err)
         return
       }
       statement.Exec(line[0],line[1],line[2],line[3],line[4],line[5],line[6],line[7])
+      /*
+      _ = txg.Exec(statementg,line[0],line[1],line[2],line[3],line[4],line[5],line[6],line[7])
+      txg.Commit()
+      */
+      delta := time.Now().Sub(a)
+      fmt.Println(delta.Nanoseconds())
     }
   }
 }
