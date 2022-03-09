@@ -1,5 +1,5 @@
 # load
-load oai data from extract into database
+Load oai data from extract into database
 
 load-swin-trovetest
 
