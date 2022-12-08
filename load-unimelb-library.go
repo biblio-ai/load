@@ -60,7 +60,7 @@ func main() {
 
   fmt.Println("SLV - Primo")
   fmt.Println("CSV - Header")
-  f, err := os.Open("csv/unimelb-library.csv")
+  f, err := os.Open("csv/unimelb-library-prototype.csv")
   if err != nil {
     panic(err)
   }
